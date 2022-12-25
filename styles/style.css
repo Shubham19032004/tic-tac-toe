@@ -14,7 +14,7 @@
 
 .container{
     padding: 40px;
-  
+    margin-left: 15rem;
     display: flex;
     justify-content: center;
 }
@@ -62,4 +62,13 @@
 }
 .bb{
     border-bottom: 0;
+}
+@media ( max-width:1290px) {
+    .box{
+        font-size: 3rem;
+    }
+    #gameboard{
+        margin-bottom: 5rem;
+    }
+    
 }
