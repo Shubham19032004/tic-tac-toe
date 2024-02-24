@@ -7,11 +7,12 @@ dotenv.config({
   path: "./env",
 });
 
-connotDB().them(() => {
-  app.listen(process.env.PORT || 8000, () => {
-    console.log(`port is running at ${process.env.PORT}`);
+connotDB()
+  .then(() => {
+    app.listen(process.env.PORT || 8000, () => {
+      console.log(`port is running at ${process.env.PORT}`);
+    });
   })
-  .catch((err)=>{
-    console.log(`unable to connect to database ${err}`)
-  })
-});
+  .catch((err) => {
+    console.log(`unable to connect to database ${err}`);
+  });

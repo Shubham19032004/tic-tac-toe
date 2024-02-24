@@ -1,1 +1,1 @@
-const DB_NAME="ticTac"
+export const DB_NAME="ticTac"
