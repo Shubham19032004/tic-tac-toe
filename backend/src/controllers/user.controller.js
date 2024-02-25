@@ -5,6 +5,20 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 
+const generateAccessAndRefershToken = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(401, `Error in genrating tokens ${error}`);
+  }
+};
+
 //Registor
 const registerUser = asyncHandler(async (req, res) => {
   const { fullname, email, username, password } = req.body;
@@ -23,18 +37,18 @@ const registerUser = asyncHandler(async (req, res) => {
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file is required before cloud");
   }
-  const avatar=await uploadOnCloudinary(avatarLocalPath)
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
 
-  if(!avatar){
-    throw new ApiError(400,"Avatar file is required after clould ")
+  if (!avatar) {
+    throw new ApiError(400, "Avatar file is required after clould ");
   }
-  const user =await User.create({
+  const user = await User.create({
     fullname,
     avatar: avatar.url,
     email,
     password,
     username: username.toLowerCase(),
-  })
+  });
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
@@ -47,3 +61,79 @@ const registerUser = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(200, createdUser, "User registered Successfully"));
 });
+
+// login
+
+const loginUser = asyncHandler(async (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  if (
+    [email, password].some((filed) => {
+      filed.trim() == "";
+    })
+  ) {
+    throw new ApiError(400, "Email and pass word are required");
+  }
+  const user = await User.findOne({
+    email: email,
+  });
+  if (!user) {
+    throw new ApiError(400, "user not found");
+  }
+  const passwordMatch = await user.isPasswordCorrect(password);
+  if (!passwordMatch) {
+    throw new ApiError(400, "Wrong password");
+  }
+  const { accesToken, refreshToken } = await generateAccessAndRefereshTokens(
+    user._id
+  );
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+  //   cookies
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+  return res
+    .status(200)
+    .cookie("accessToken", accesToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: loggedInUser,
+          accesToken,
+          refreshToken,
+        },
+        "user logged in Successfully"
+      )
+    );
+});
+
+const logoutUser = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $unset: {
+        refreshToken: 1,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User logged Out"));
+});
+
+export { logoutUser, loginUser, registerUser };
