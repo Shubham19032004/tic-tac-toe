@@ -22,16 +22,18 @@ const generateAccessAndRefershToken = async (userId) => {
 //Registor
 const registerUser = asyncHandler(async (req, res) => {
   const { fullname, email, username, password } = req.body;
+  console.log( fullname, email, username, password)
   if (
     [fullname, email, username, password].some((item) => item?.trim() == "")
   ) {
     throw new ApiError(400, "All field are required");
   }
-  const existedUser = User.findOne({
+  const existedUser = await User.findOne({
     $or: [{ email }, { username }],
   });
+  
   if (existedUser) {
-    throw new ApiError(400, "User and email should be unique");
+    throw new ApiError(400, "Username or email is already taken");
   }
   const avatarLocalPath = req.files?.avatar[0]?.path;
   if (!avatarLocalPath) {
@@ -47,7 +49,7 @@ const registerUser = asyncHandler(async (req, res) => {
     avatar: avatar.url,
     email,
     password,
-    username: username.toLowerCase(),
+    username: username,
   });
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
@@ -84,7 +86,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!passwordMatch) {
     throw new ApiError(400, "Wrong password");
   }
-  const { accesToken, refreshToken } = await generateAccessAndRefereshTokens(
+  const { accesToken, refreshToken } = await generateAccessAndRefershToken(
     user._id
   );
   const loggedInUser = await User.findById(user._id).select(
