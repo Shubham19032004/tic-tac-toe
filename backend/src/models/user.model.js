@@ -33,17 +33,6 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-    coverImage: {
-      type: String,
-      lowercase: true,
-      trim: true,
-    },
-    watchhistory: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "video",
-      },
-    ],
     password: {
       type: String,
       required: [true, "Password is required"],
