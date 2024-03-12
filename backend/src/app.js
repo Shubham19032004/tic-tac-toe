@@ -1,12 +1,12 @@
-import epxress from "express";
+import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import express from "express";
-const app = epxress();
+const app = express();
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: 'http://localhost:5173',
+    credentials: true,
   })
 );
 
@@ -19,14 +19,15 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 // static public folder
 app.use(express.static("public"));
 
+
 app.use(cookieParser())
 
 // ROUTER 
 import userRouter from "./routes/user.routes.js" 
-
-
 // routes declaration
-
 app.use("/api/v1/users",userRouter)
+
+import ticTacRoute from "./routes/ticTac.routes.js"
+app.use("/api/v1/tictactoe", ticTacRoute);
 
 export {app};

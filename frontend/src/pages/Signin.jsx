@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
 export default function Signin() {
     const navigate = useNavigate();
   const [data, setData] = useState({
@@ -15,7 +16,6 @@ export default function Signin() {
     }));
   }
    async function submit(event){
-    console.log(data)
     event.preventDefault();
   try {
 
@@ -28,7 +28,9 @@ export default function Signin() {
       }
       )
       if(response.status==200){
-        navigate('/tictac');
+        console.log(response.headers);
+        console.log(response.data)
+        navigate('/tictactoe');
       }
   } catch (error) {
     console.log(error)

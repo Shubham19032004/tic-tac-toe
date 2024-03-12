@@ -12,7 +12,6 @@ const generateAccessAndRefershToken = async (userId) => {
     const refreshToken = user.generateRefreshToken();
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
-
     return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(401, `Error in genrating tokens ${error}`);
@@ -81,7 +80,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!passwordMatch) {
     throw new ApiError(400, "Wrong password");
   }
-  const { accesToken, refreshToken } = await generateAccessAndRefershToken(
+  const { accessToken, refreshToken } = await generateAccessAndRefershToken(
     user._id
   );
   const loggedInUser = await User.findById(user._id).select(
@@ -91,23 +90,24 @@ const loginUser = asyncHandler(async (req, res) => {
   //   cookies
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: false,
   };
+
   return res
-    .status(200)
-    .cookie("accessToken", accesToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-      new ApiResponse(
-        200,
-        {
-          user: loggedInUser,
-          accesToken,
-          refreshToken,
-        },
-        "user logged in Successfully"
-      )
-    );
+  .status(200)
+  .cookie("accessToken", accessToken, options)
+  .cookie("refreshToken", refreshToken, options)
+  .json(
+    new ApiResponse(
+      200,
+      {
+        user: loggedInUser,
+        accessToken,
+        refreshToken,
+      },
+      "user logged in Successfully"
+    )
+  );
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
