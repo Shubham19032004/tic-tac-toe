@@ -21,6 +21,7 @@ export default function Register() {
       formData.append("email", data.email);
       formData.append("username", data.username);
       formData.append("password", data.password);
+      
       formData.append("avatar", image);
 
       const res = await axios.post(
