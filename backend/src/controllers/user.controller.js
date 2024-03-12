@@ -22,7 +22,6 @@ const generateAccessAndRefershToken = async (userId) => {
 //Registor
 const registerUser = asyncHandler(async (req, res) => {
   const { fullname, email, username, password } = req.body;
-  console.log( fullname, email, username, password)
   if (
     [fullname, email, username, password].some((item) => item?.trim() == "")
   ) {
