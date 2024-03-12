@@ -2,6 +2,7 @@ import './App.css';
 import Register from './pages/Register';
 import { BrowserRouter, Routes, Route, } from 'react-router-dom';
 import Signin from './pages/Signin';
+import TicTacToe from './pages/TicTacToe.jsx';
 
 function App() {
 
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Register />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/signin" element={<Signin />} />
+          <Route path="/tictac" element={<TicTacToe />} />
         </Routes>
       </BrowserRouter>
     </>

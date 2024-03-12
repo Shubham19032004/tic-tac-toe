@@ -30,7 +30,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const existedUser = await User.findOne({
     $or: [{ email }, { username }],
   });
-  
+
   if (existedUser) {
     throw new ApiError(400, "Username or email is already taken");
   }
@@ -68,12 +68,8 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  if (
-    [email, password].some((filed) => {
-      filed.trim() == "";
-    })
-  ) {
-    throw new ApiError(400, "Email and pass word are required");
+  if ([email, password].some((item) => item?.trim() == "")) {
+    throw new ApiError(400, "Email and password are required");
   }
   const user = await User.findOne({
     email: email,
@@ -81,7 +77,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(400, "user not found");
   }
-  const passwordMatch = await user.isPasswordCorrect(password);
+  const passwordMatch = await user.isPassswordCorrect(password);
   if (!passwordMatch) {
     throw new ApiError(400, "Wrong password");
   }
