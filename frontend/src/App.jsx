@@ -1,11 +1,11 @@
 import './App.css';
 import Register from './pages/Register';
-import { BrowserRouter, Routes, Route, } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Signin from './pages/Signin';
 import TicTacToe from './pages/TicTacToe.jsx';
 
 function App() {
-
+  
   return (
     <>
       <BrowserRouter>
