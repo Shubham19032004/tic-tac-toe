@@ -5,12 +5,9 @@ import { User } from "../models/user.model.js";
 
 export const verifyJWT = asyncHandler(async (req, res, next) => {
   try {
-    console.log("\n\n\nVerifyJWT");
     
     // Check for the token in cookies first, then in the Authorization header
     const token = req.cookies?.accessToken || (req.headers.authorization || '').replace('Bearer ', '');
-
-    console.log(`Token: ${token}`);
     
     if (!token) {
       throw new ApiError(401, "Unauthorized request");
