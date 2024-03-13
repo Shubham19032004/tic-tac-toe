@@ -18,13 +18,14 @@ export default function Signin() {
    async function submit(event){
     event.preventDefault();
   try {
-
-      const response =await axios.post("http://localhost:8000/api/v1/users/login",
+    const response = await axios.post(
+      "http://localhost:8000/api/v1/users/login",
       data,
       {
         headers: {
-            "Content-Type": "application/json",
-          },
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
       }
       )
       if(response.status==200){

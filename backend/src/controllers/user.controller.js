@@ -61,41 +61,39 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 // login
-
 const loginUser = asyncHandler(async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  if ([email, password].some((item) => item?.trim() == "")) {
+  const { email, password } = req.body;
+
+  if ([email, password].some((item) => item?.trim() === "")) {
     throw new ApiError(400, "Email and password are required");
   }
-  const user = await User.findOne({
-    email: email,
-  });
+
+  const user = await User.findOne({ email });
+
   if (!user) {
-    throw new ApiError(400, "user not found");
+    throw new ApiError(400, "User not found");
   }
+
   const passwordMatch = await user.isPassswordCorrect(password);
+
   if (!passwordMatch) {
     throw new ApiError(400, "Wrong password");
   }
-  const { accessToken, refreshToken } = await generateAccessAndRefershToken(
-    user._id
-  );
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
+
+  const { accessToken, refreshToken } = await generateAccessAndRefershToken(user._id);
+  const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
   //   cookies
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    sameSite: 'None',
   };
-  console.log(`access:${accessToken}`)
-  return res
-  .status(200)
-  .cookie("accessToken", accessToken, options)
-  .cookie("refreshToken", refreshToken, options)
-  .json(
+
+  res.cookie("accessToken", accessToken, options);
+  res.cookie("refreshToken", refreshToken, options);
+
+  return res.status(200).json(
     new ApiResponse(
       200,
       {
@@ -103,7 +101,7 @@ const loginUser = asyncHandler(async (req, res) => {
         accessToken,
         refreshToken,
       },
-      "user logged in Successfully"
+      "User logged in successfully"
     )
   );
 });
