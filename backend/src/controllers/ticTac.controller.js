@@ -3,12 +3,12 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const ticTac=asyncHandler(async(req,res)=>{
-    return res
+    return res.status(200)
     .json(
         new ApiResponse(
           200,
           "efwrw",
-          "not a user"
+          " a user"
         )
       );
 })

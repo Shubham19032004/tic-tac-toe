@@ -1,28 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-
-
 export default function TicTacToe() {
   const navigate = useNavigate();
-
-  async function fetchData(navigate) {
+  const token = window.localStorage.getItem('accessToken') || '';
+  
+  async function fetchData() {
     try {
-      const response = await axios.post("http://localhost:8000/api/v1/tictactoe", {}, {
+      const config = {
+        method: 'GET',
         withCredentials: true,
-      })
-      // Check for a successful response (status code 2xx)
+        headers: { Authorization: `Bearer ${token}` },
+      };
+
+      const response = await axios.post('http://localhost:8080/users/me', config);
+
       if (response.status === 200) {
-        // Handle successful response
         console.log('TicTacToe data fetched successfully');
       } else {
         // Handle other status codes
         console.log(`Unexpected status code: ${response.status}`);
       }
     } catch (error) {
-      // Check for a 409 status code in the error response
+      
       if (error.response && error.response.status === 401) {
+        console.error('Unauthorized request. Redirecting to signup.');
         navigate('/signup');
       } else {
         // Handle other errors
@@ -30,11 +33,10 @@ export default function TicTacToe() {
       }
     }
   }
-  useEffect(() => {
-    fetchData(navigate);
-  }, []);
 
-  return (
-    <div>TicTacToe</div>
-  );
+  useEffect(() => {
+    fetchData();
+  }, [token, navigate]);
+
+  return <div>TicTacToe</div>;
 }

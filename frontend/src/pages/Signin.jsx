@@ -28,8 +28,11 @@ export default function Signin() {
       }
       )
       if(response.status==200){
-        console.log(response.headers);
-        console.log(response.data)
+        console.log(response.data);
+
+        const accessToken = response.data.accessToken;
+        console.log(accessToken);
+        window.localStorage.setItem("accessToken", response.data.accessToken);
         navigate('/tictactoe');
       }
   } catch (error) {

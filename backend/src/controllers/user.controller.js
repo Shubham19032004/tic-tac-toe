@@ -3,8 +3,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import jwt from "jsonwebtoken";
-
 const generateAccessAndRefershToken = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -90,9 +88,9 @@ const loginUser = asyncHandler(async (req, res) => {
   //   cookies
   const options = {
     httpOnly: true,
-    secure: false,
+    secure: true,
   };
-
+  console.log(`access:${accessToken}`)
   return res
   .status(200)
   .cookie("accessToken", accessToken, options)
